@@ -2,6 +2,8 @@ const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 const crypto = require('crypto');
 const jwt = require('jsonwebtoken');
+const Ingredient = require('./ingredients');
+
 
 const userSchema = new Schema(
   {
@@ -11,7 +13,7 @@ const userSchema = new Schema(
       required: [true, 'Please add an email'],
     },
     ingredients: {
-      type: [String],
+      type: [Ingredient.schema], 
     },
     salt: {
       type: String,
@@ -19,6 +21,9 @@ const userSchema = new Schema(
     hash: {
       type: String,
     },
+    slug: {
+      type: String,
+    }
   },
   { collection: 'users' }
 );
@@ -52,4 +57,4 @@ userSchema.methods.generateJWT = function () {
 
 const User = mongoose.model('User', userSchema);
 
-module.exports = User;
+module.exports = { User };

@@ -64,7 +64,7 @@ module.exports = {
             const existingUser = await User.findOne({ email });
     
             if (existingUser) {
-                return res.status(400).json({ message: 'Email ' });
+                return res.status(400).json({ message: 'Email deja utilisé ! ' });
             }
     
             // Si l'utilisateur n'existe pas, enregistre le nouvel utilisateur
@@ -93,8 +93,28 @@ module.exports = {
             return res.status(status).json({ message });
         }
     },
-    signupResponse: async (req, res) => {
-      
+  
+    signinResponse: async (req, res) => {
+
+        const { email, password } = req;
+
+            const existingUser = await User.findOne({ email });
+
+            if (!existingUser) {
+                return res.status(401).json({ message: 'Utilisateur inexistant pour ce mail ' });
+            }
+
+           
+            const isPasswordValid = existingUser.passwordIsValid(password);
+         
+            if (!isPasswordValid) {
+                return res.status(401).json({ message: 'mot de passe incorrecte' });
+            }
+
+          
+            const token = jwt.sign({ userId: existingUser._id }, process.env.JWT_SECRET, { expiresIn: '12h' });
+
+            res.status(200).json({ message: 'Bravo vous êtes connecté !', token });
     },
 
 
